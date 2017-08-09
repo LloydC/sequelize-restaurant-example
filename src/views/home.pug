@@ -1,23 +1,28 @@
 doctype html
 html(lang='en')
-	head
+  head
     title Home
-  body 
-  form(action='/', method='POST', autocomplete='off')
-    label(for='username') YOUR NAME
-    br
-    input(type='text', name='name', placeholder="name")
-    br
-    br
-    label(for='email') YOUR EMAIL
-    br
-    input(type='text', name='email', placeholder="email")
-    br
-    label(for='password') YOUR PASSWORD
-    br
-    input(type='password', name='password', placeholder="Password")
-    br
-    br
-    button.btn.btn-default(type="submit", name="login") LOGIN
-  p You don't have an account yet?
-  a.btn.btn-default(href='/signup', role='button') Sign Up
+  body
+    form(action='/', method='POST', autocomplete='off')
+      label(for='username') YOUR NAME
+      br
+      input(type='text', name='name', placeholder="name")
+      br
+      br
+      label(for='email') YOUR EMAIL
+      br
+      input(type='text', name='email', placeholder="email")
+      br
+      label(for='password') YOUR PASSWORD
+      br
+      input(type='password', name='password', placeholder="Password")
+      br
+      br
+      button.btn.btn-default(type="submit", name="login") LOGIN
+      
+    p You don't have an account yet?
+    a.btn.btn-default(href='/signup', role='button') Sign Up
+  
+    
+     
+  

@@ -1,0 +1,24 @@
+doctype html
+html(lang='en')
+  head
+    title Sign Up Page
+  body
+    form.col.s12(action='/signup', method='POST', autocomplete='off' id='form')
+      label(for='username') Choose a username
+      br
+      br
+      input(type='text', name='name')
+      br
+      br
+      label(for='email') Choose an email
+      br
+      br
+      input(type='text', name='email')
+      br
+      br
+      label(for='password') Choose a password
+      br
+      input(type='password', name='password')
+      br
+      br
+      button.btn.btn-default(type="submit", name="submit") CREATE NEW ACCOUNT

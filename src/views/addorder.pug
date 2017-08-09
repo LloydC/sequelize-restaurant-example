@@ -1,0 +1,20 @@
+doctype html
+html(lang='en')
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0')
+    title Add An Order
+  body
+    form.col.s12(action='/addOrder', method='POST', autocomplete='off' id='form')
+      label(for='name') What Do You Want To Eat
+      br
+      br
+      input(type='text', name='menuOrder')
+      br
+      br
+      label(for='name') What Do You Want To Drink
+      br
+      br
+      input(type='text', name='menuDrink')
+      br
+      br
+      button.btn.btn-default(type="submit", name="submit") SUBMIT ORDER 
