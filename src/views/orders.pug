@@ -9,5 +9,8 @@ html
       each order in ordersList
         li= order.menuOrder
         li= order.drinkOrder
+        li= order.waiter.name
     a(href='/myprofile') Click here to go back to your profile
+    br
+    a(href='/logout') Click here to logout
     

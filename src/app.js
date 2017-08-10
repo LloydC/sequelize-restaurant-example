@@ -119,6 +119,15 @@ app.post('/', function (req, res) {
 	});
 });
 
+app.get('/logout', (req,res)=>{
+  req.session.destroy(function(error) {
+		if(error) {
+			throw error;
+		}
+		response.redirect('/?message=' + encodeURIComponent("Successfully logged out."));
+	})
+})
+
 //ROUTE 02: CREATING NEW USER IN SIGNUP-------------
 app.get('/signup', function(req, res){
 	res.render("signup");
@@ -203,8 +212,13 @@ app.get('/orders/:orderId', function(req, res){
 	})
 });
 
+//ROUTE 05: DISPLAYING ALL ORDERS PAGE
 app.get('/orders', function(req,res){
-  Order.findAll()
+  Order.findAll({
+    include: [{
+    model: Waiter
+  }]
+  })
   .then((orders)=>{
     console.log(orders)
     res.render('orders',{ordersList: orders})
