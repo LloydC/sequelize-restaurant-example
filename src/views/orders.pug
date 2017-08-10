@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    title Orders Page
+  body
+    h1 Order list
+    br
+    ul
+      each order in ordersList
+        li= order.menuOrder
+        li= order.drinkOrder
+    a(href='/myprofile') Click here to go back to your profile
+    

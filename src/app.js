@@ -1,26 +1,34 @@
 const Sequelize = require('sequelize')
 const express = require('express')
 const session = require('express-session')
+const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 // CONFIG dependencies
 const app = express()
 
+const sequelize = new Sequelize('sequelize_restaurant',process.env.POSTGRES_USER,null,{
+  host: 'localhost',
+  dialect: 'postgres',
+  storage: './session.postgres'
+})
+
 app.set('views','./views')
 app.set('view engine','pug')
 
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(session({
+  store: new SequelizeStore({
+    db: sequelize,
+    checkExpirationInterval: 15 * 60 * 1000, // The interval at which to cleanup expired sessions in milliseconds.
+    expiration: 24 * 60 * 60 * 1000 // The maximum age (in milliseconds) of a valid session.
+  }),
   secret: "safe",
-  saveUnitialized: false,
-  resave: true
+  saveUnitialized: true,
+  resave: false
 }))
-
-const sequelize = new Sequelize('sequelize_restaurant',process.env.POSTGRES_USER,null,{
-  host: 'localhost',
-  dialect: 'postgres'
-})
-
 //MODELS DEFINITION
 const Waiter = sequelize.define('waiters',{
   name: {
@@ -44,6 +52,9 @@ const Order = sequelize.define('orders',{
   drinkOrder:{
     type: Sequelize.STRING
   }
+},{
+  timestamps:true,
+  updatedAt:false
 })
 
 // const Table = sequelize.define('tables',{
@@ -55,12 +66,13 @@ const Order = sequelize.define('orders',{
 // })
 
 // TABLES RELATIONSHIP/ASSOCIATION
+Waiter.hasMany(Order)
+Order.belongsTo(Waiter)
 
 // Waiter.hasMany(Table)
-Waiter.hasMany(Order)
 // Table.hasMany(Order)
 // Table.belongsTo(Waiter)
-Order.belongsTo(Waiter)
+
 // Order.belongsTo(Table)
 
 //----------------ROUTES----------------
@@ -131,6 +143,7 @@ app.post('/signup', function(req, res){
 
 app.get('/myprofile', (req,res)=>{
   const waiter = req.session.waiter
+  console.log('Waiter info '+ waiter)
   res.render('profile',{waiter: waiter})
 })
 
@@ -159,11 +172,11 @@ app.post('/addorder', function(req, res) {
 	.then(function(waiter){
 		return waiter.createOrder({
 			menuOrder: inputMenu,
-      menuDrink: inputDrink
+      drinkOrder: inputDrink
 		})
 	})
 	.then( order => {
-		res.redirect(`/orders/${order.id}`);
+		res.redirect(`/orders/${order.id}`); // === '/orders/' + order.id
 	})
 });
 
@@ -172,7 +185,7 @@ app.post('/addorder', function(req, res) {
 app.get('/orders/:orderId', function(req, res){
 
 	const orderId = req.params.orderId;
-	console.log('This is what I receive as orderId get request: '+orderId);
+	// console.log('This is what I receive as orderId get request: '+orderId);
 
 	Order.findOne({
 		where: {
@@ -183,16 +196,23 @@ app.get('/orders/:orderId', function(req, res){
 		}]
 	})
 	.then(function(order){
-		// console.log(JSON.stringify(post, null, 2));
 		console.log(order)
 		console.log(order.waiter);
 		console.log('Waiterdata: '+order.waiter.name);
-		res.render("order", {menuOrder: order.menuOrder,menuDrink: order.menuDrink, orderId: orderId, name: order.waiter.name});
+		res.render("order", {menuOrder: order.menuOrder, menuDrink: order.drinkOrder, orderId: orderId, name: order.waiter.name});
 	})
 });
 
+app.get('/orders', function(req,res){
+  Order.findAll()
+  .then((orders)=>{
+    console.log(orders)
+    res.render('orders',{ordersList: orders})
+  })
+})
+
 sequelize.sync({force: false})
 
-var server = app.listen(3002, function(){
-  console.log("App listening on port 3002")
+var server = app.listen(3000, function(){
+  console.log("App listening on port 3000")
 })
