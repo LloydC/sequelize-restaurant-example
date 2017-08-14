@@ -1,6 +1,7 @@
 doctype html
 html
   head
+    link(href='main.css')
     title Orders Page
   body
     h1 Order list
@@ -10,6 +11,9 @@ html
         li= order.menuOrder
         li= order.drinkOrder
         li= order.waiter.name
+        a(href='/orders/'+order.id) Click here to see the order
+        br
+        a(href='/editOrder/'+order.id) Click here to change the order
     a(href='/myprofile') Click here to go back to your profile
     br
     a(href='/logout') Click here to logout

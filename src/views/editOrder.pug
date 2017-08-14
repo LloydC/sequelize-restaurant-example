@@ -1,0 +1,26 @@
+doctype html
+html(lang='en')
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0')
+    title Edit An Order
+  body
+    form.col.s12(action='/editOrder/'+ orderId, method='POST', autocomplete='off' id='form')
+      label(for='name') What Do You Want To Update About The Menu?
+      br
+      br
+      input(type='text', name='menuOrder')
+      br
+      br
+      label(for='name') What Do You Want To Update About the Drinks?
+      br
+      br
+      input(type='text', name='menuDrink')
+      br
+      br
+      button.btn.btn-default(type="submit", name="submit") Edit the ORDER 
+    br
+    a(href='/logout') Click here to logout
+    br
+    a(href='/myprofile') Click here to go back to your profile
+    br
+    a(href='/orders') Orders List

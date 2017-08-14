@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const express = require('express')
 const session = require('express-session')
-const cookieParser = require('cookie-parser')
+// const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
@@ -13,11 +13,12 @@ const sequelize = new Sequelize('sequelize_restaurant',process.env.POSTGRES_USER
   dialect: 'postgres',
   storage: './session.postgres'
 })
+app.use(express.static('public'))
 
 app.set('views','./views')
 app.set('view engine','pug')
 
-app.use(cookieParser())
+// app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(session({
   store: new SequelizeStore({
@@ -52,9 +53,6 @@ const Order = sequelize.define('orders',{
   drinkOrder:{
     type: Sequelize.STRING
   }
-},{
-  timestamps:true,
-  updatedAt:false
 })
 
 // const Table = sequelize.define('tables',{
@@ -124,7 +122,7 @@ app.get('/logout', (req,res)=>{
 		if(error) {
 			throw error;
 		}
-		response.redirect('/?message=' + encodeURIComponent("Successfully logged out."));
+		res.redirect('/?message=' + encodeURIComponent("Successfully logged out."));
 	})
 })
 
@@ -224,6 +222,56 @@ app.get('/orders', function(req,res){
     res.render('orders',{ordersList: orders})
   })
 })
+
+app.get('/editOrder/:orderId', function(req,res){
+  let orderId = req.params.orderId
+  res.render('editOrder',{orderId: orderId})
+})
+
+// ROUTE 06: EDIT AN ORDER
+app.post('/editOrder/:orderId', function(req,res){
+  let orderId = req.params.orderId
+  let waiterId = req.session.waiter.id
+
+  const inputMenu = req.body.menuOrder;
+  const inputDrink = req.body.menuDrink;
+
+  Order.update({
+      id: orderId,
+      menuOrder: inputMenu,
+      drinkOrder: inputDrink,
+      waiterId: waiterId
+    },{
+      where: {
+        id: orderId
+      }
+    })
+  .then(() => {
+    res.redirect(`/orders/${orderId}`);
+  })
+
+})
+
+// ROUTE 07 DELETE AN ORDER
+
+app.get('/deleteOrder/:orderId', function(req,res){
+  let orderId = req.params.orderId
+  let waiterId = req.session.waiter.id
+
+  Order.destroy({
+    where:{
+      id: orderId
+    }
+  })
+  .then(()=>{
+    res.redirect('/orders')
+  })
+})
+
+//ROUTE 08: CHAT ROOM FOR WAITERS TO CHAT
+// app.get('/chat',(req,res)=>{
+//   res.render('chatroom')
+// })
 
 sequelize.sync({force: false})
 
